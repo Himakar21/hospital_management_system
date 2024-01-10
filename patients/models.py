@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import RegexValidator
 from doctors.models import Doctor
 from hospitals.models import Hospital,Department
-# Create your models here.
 
 class Patient(models.Model):
 
