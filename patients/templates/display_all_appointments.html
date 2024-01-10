@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<head><title>Patient</title></head>
+<body>
+    <table border="1">
+        <thead>
+            <th><strong>Patient</strong></th>
+            <th><strong>Symptoms</strong></th>
+            <th><strong>Department</strong></th>
+            <th><strong>Hospital </strong></th>
+            <th><strong>Doctor</strong></th>
+            <th><strong>visit_date</strong></th>
+            <th><strong>Status</strong></th>
+        </thead>
+        {% for appointment in all_appointments %}
+            <tr>
+                <td>{{ appointment.patient.name }}</td>
+                <td>{{ appointment.symptoms }}</td>
+                <td>{{ appointment.department.name }}</td>
+                <td>{{ appointment.hospital.name }}</td>
+                <td>{{ appointment.doctor.name }}</td>
+                <td>{{ appointment.visit_date}}</td>
+                <td>{{appointment.status}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

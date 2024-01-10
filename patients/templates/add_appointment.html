@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+
+    <form method="post" >{%csrf_token%}
+        {{form.as_p}}
+        <input type="submit" value="Book appointment">
+    </form>
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $('#id_department').change(function(){
+              var departmentId = $('#id_department').val();
+              $.ajax({
+                  url: '{% url "get_department_hospitals" %}',  
+                  data: {'department_id':departmentId},
+                  dataType: 'json',
+                  success: function(data){
+                      
+                      var hospitalsSelect = $('#id_hospital');
+                      hospitalsSelect.empty();
+                      $.each(data.hospitals, function(index, hospital){
+                        hospitalsSelect.append('<option value="'+ hospital.id +'">'+ hospital.name +'</option>');
+                      });
+                  }
+              });
+          });
+          $('#id_hospital,#id_department').change(function(){
+              var hospitalId = $('#id_hospital').val();
+              var departmentId = $('#id_department').val();
+              $.ajax({
+                  url: '{% url "get_hospital_doctors" %}',  
+                  data: {'hospital_id': hospitalId,'department_id':departmentId},
+                  dataType: 'json',
+                  success: function(data){
+                      var doctorsSelect = $('#id_doctor');
+                      doctorsSelect.empty();
+                      $.each(data.doctors, function(index, doctor){
+                          doctorsSelect.append('<option value="'+ doctor.id +'">'+ doctor.name +'</option>');
+                      });
+                  }
+              });
+          });
+      });
+    </script>
+</body>
+</html>

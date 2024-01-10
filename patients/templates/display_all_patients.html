@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head><title>Patient</title></head>
+<body>
+    <table border="1">
+        <thead>
+            <th><strong>Name</strong></th>
+            <th><strong>Mobile Number</strong></th>
+            <th><strong>DoB</strong></th>
+        </thead>
+        {% for patient in all_patients %}
+            <tr>
+                <td>{{ patient.name }}</td>
+                <td>{{ patient.mobilenumber }}</td>
+                <td>{{patient.dateofbirth}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
