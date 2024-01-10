@@ -4,6 +4,12 @@ from django.contrib.auth import authenticate,login,logout
 from .models import Patient,Appointment
 from .forms import UpdateAppointmentStatusForm,AddPatientForm,AddAppointmentForm
 
+from rest_framework.views import APIView
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import PatientSerializer,AppointmentSerializer
+
 def HomeView(request,*args,**kwargs):
     return render(request,"home.html",{})
 
@@ -18,64 +24,76 @@ def LoginView(request,*args,**kwargs):
 
     return render(request,"login.html",{})
 
-def SpecificPatientView(request,id,**kwargs):
-    try:
-        pat = Patient.objects.get(id=id)
-    except Patient.DoesNotExist:
-        raise Http404
-    my_context = {"patient":pat}
-    return render(request,"display_specific_patient.html",my_context)
+class SpecificPatientView(RetrieveAPIView):
+    def get(self, request, id, *args, **kwargs):
+        try:
+            patient = Patient.objects.get(id=id)
+        except Patient.DoesNotExist:
+            raise Http404
+        serializer = PatientSerializer(patient)
+        return Response(serializer.data)
 
-def AllPatientsView(request,*args,**kwargs):
-    all_patients = Patient.objects.all()
-    my_context = {"all_patients":all_patients}
-    #print(all_patients)
-    return render(request,"display_all_patients.html",my_context)
+class AllPatientsView(APIView):
+    def get(self,request,*args,**kwargs):
+        all_patients = Patient.objects.all()
+        serializer = PatientSerializer(all_patients,many=True)
+        return Response(serializer.data)
+    
+class AddPatientView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = PatientSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def AddPatientView(request,*args,**kwargs):
-    form = AddPatientForm(request.POST or None)
-    if form.is_valid():
-        form.save()
+    def get(self, request, *args, **kwargs):
         form = AddPatientForm()
-    else:
-        print(form.errors)
-    my_context = {"form":form}
-    #print(form)
-    return render(request,"add_patient.html",my_context)
+        my_context = {"form": form}
+        return render(request, "add_patient.html", my_context)
 
-def SpecificAppointmentView(request,id,**kwargs):
-    try:
-        appointment = Appointment.objects.get(id=id)
-    except Patient.DoesNotExist:
-        raise Http404
-    my_context = {"appointment":appointment}
-    return render(request,"display_specific_appointment.html",my_context)
+class SpecificAppointmentView(RetrieveAPIView):
+    def get(self,request,id,**kwargs):
+        try:
+            appointment = Appointment.objects.get(id=id)
+        except Patient.DoesNotExist:
+            raise Http404
+        serializer = AppointmentSerializer(appointment)
+        return Response(serializer.data)
 
-def AllAppointmentsView(request,*args,**kwargs):
-    all_appointments = Appointment.objects.all()
-    my_context = {"all_appointments":all_appointments}
-    #print(all_patients)
-    return render(request,"display_all_appointments.html",my_context)
+class AllAppointmentsView(APIView):
+    def get(self,request,*args,**kwargs):
+        all_appointments = Appointment.objects.all()
+        serializer = AppointmentSerializer(all_appointments,many=True)
+        #print(serializer)
+        return Response(serializer.data)
 
-def AddAppointmentView(request,*args,**kwargs):
-    form = AddAppointmentForm(request.POST or None)
-    if form.is_valid():
-        form.save()
+class AddAppointmentView(APIView):
+    def get(self,request,*args,**kwargs):
         form = AddAppointmentForm()
-    else:
-        print(form.errors)
-    my_context = {"form":form}
-    #print(form)
-    return render(request,"add_appointment.html",my_context)
+        my_context = {"form":form}
+        #print(form)
+        return render(request,"add_appointment.html",my_context)
+    def post(self,request,*args,**kwargs):
+        serializer = AppointmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
-def UpdateStatusView(request,id):
-    form = UpdateAppointmentStatusForm(request.POST or None,instance=Appointment.objects.get(id=id))
-    if form.is_valid():
-        form.save()
-        #my_context = {"patient":Patient.objects.get(id=id)}
-        return render(request,"display_all_patients.html",my_context)
-    else:
-        print(form.errors)
-        print("error")
-    my_context={"form":form}
-    return render(request,"update_status.html",my_context)
+class UpdateStatusView(APIView):
+    def get(self,request,id):
+        form = UpdateAppointmentStatusForm(instance=Appointment.objects.get(id=id))
+        my_context = {"form":form}
+        return render(request,"update_status.html",my_context)
+    def post(self,request,id):
+        instance = Appointment.objects.get(id=id)
+        form = UpdateAppointmentStatusForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()  
+            serializer = AppointmentSerializer(Appointment.objects.get(id=id)) 
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
