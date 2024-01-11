@@ -5,11 +5,6 @@ from hospitals.models import Hospital,Department
 
 class Patient(models.Model):
 
-    mobilenumber_validator = RegexValidator(
-        regex=r'^[1-9]\d{9}$',
-        message="10 digit number"
-    )
-
     id = models.AutoField(auto_created=True,primary_key = True)
     name = models.CharField(max_length=50)
     dateofbirth = models.DateField()

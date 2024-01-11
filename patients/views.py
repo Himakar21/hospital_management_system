@@ -85,15 +85,17 @@ class AddAppointmentView(APIView):
 
 class UpdateStatusView(APIView):
     def get(self,request,id):
-        form = UpdateAppointmentStatusForm(instance=Appointment.objects.get(id=id))
+        form = UpdateAppointmentStatusForm()
+        #print(form.data)
         my_context = {"form":form}
         return render(request,"update_status.html",my_context)
     def post(self,request,id):
         instance = Appointment.objects.get(id=id)
+        #print(request.POST)
         form = UpdateAppointmentStatusForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()  
-            serializer = AppointmentSerializer(Appointment.objects.get(id=id)) 
+            serializer = AppointmentSerializer(instance) 
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
