@@ -5,7 +5,6 @@ from .models import Patient,Appointment
 from .forms import UpdateAppointmentStatusForm,AddPatientForm,AddAppointmentForm
 
 from rest_framework.views import APIView
-from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PatientSerializer,AppointmentSerializer
@@ -24,7 +23,7 @@ def LoginView(request,*args,**kwargs):
 
     return render(request,"login.html",{})
 
-class SpecificPatientView(RetrieveAPIView):
+class SpecificPatientView(APIView):
     def get(self, request, id, *args, **kwargs):
         try:
             patient = Patient.objects.get(id=id)
@@ -52,13 +51,16 @@ class AddPatientView(APIView):
         my_context = {"form": form}
         return render(request, "add_patient.html", my_context)
 
-class SpecificAppointmentView(RetrieveAPIView):
+class SpecificAppointmentView(APIView):
     def get(self,request,id,**kwargs):
         try:
-            appointment = Appointment.objects.get(id=id)
+            patient_instance=Patient.objects.get(id=id)
+            #print(patient_instance)
+            appointments = Appointment.objects.filter(patient= patient_instance)
+            #print(appointment[0].symptoms)
         except Patient.DoesNotExist:
             raise Http404
-        serializer = AppointmentSerializer(appointment)
+        serializer = AppointmentSerializer(appointments,many=True)
         return Response(serializer.data)
 
 class AllAppointmentsView(APIView):
