@@ -2,9 +2,11 @@
 Hospital Management System - Project Requirement Document
 
 1. Introduction
+
    
 1.1 Purpose
 The purpose of the Hospital Management System is to provide an efficient solution for managing hospital operations. This system aims to organize the processes involved in hospital management, including the creation and management of hospitals, departments, patients, and their respective statuses.
+
 1.2 Scope
 The scope of the Hospital Management System encompasses the creation of a superuser interface for overall management, allowing the addition of new hospitals, departments, and patients. The system will also provide functionalities to update patient status and manage and retrieve relevant information for administrative purposes.
 
