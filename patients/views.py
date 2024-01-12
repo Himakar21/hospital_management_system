@@ -36,7 +36,7 @@ class AllPatientsView(APIView):
     def get(self,request,*args,**kwargs):
         all_patients = Patient.objects.all()
         serializer = PatientSerializer(all_patients,many=True)
-        return Response(serializer.data)
+        return render(request,"display_all_patients.html",{"all_patients":serializer.data})
     
 class AddPatientView(APIView):
     def post(self, request, *args, **kwargs):
@@ -66,9 +66,9 @@ class SpecificAppointmentView(APIView):
 class AllAppointmentsView(APIView):
     def get(self,request,*args,**kwargs):
         all_appointments = Appointment.objects.all()
-        serializer = AppointmentSerializer(all_appointments,many=True)
+        #serializer = AppointmentSerializer(all_appointments,many=True)
         #print(serializer)
-        return Response(serializer.data)
+        return render(request,"display_all_appointments.html",{"all_appointments":all_appointments})
 
 class AddAppointmentView(APIView):
     def get(self,request,*args,**kwargs):
