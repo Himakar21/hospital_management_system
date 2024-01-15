@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import Http404
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.decorators import login_required
 from .models import Patient,Appointment
 from .forms import UpdateAppointmentStatusForm,AddPatientForm,AddAppointmentForm
 
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PatientSerializer,AppointmentSerializer
 
+@login_required(login_url='/')
 def HomeView(request,*args,**kwargs):
     return render(request,"home.html",{})
 
@@ -16,10 +18,15 @@ def LoginView(request,*args,**kwargs):
     if request.method=="POST":
         uname = request.POST.get('username')
         upass = request.POST.get('password')
+        print(upass,uname)
         user = authenticate(username=uname,password=upass)
         if user:
             login(request,user)
-            return redirect("home/")
+            if user.is_staff:
+                return redirect("admin/")
+            else:
+                return redirect("home/")
+
 
     return render(request,"login.html",{})
 
