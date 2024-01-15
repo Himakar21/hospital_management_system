@@ -54,6 +54,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+SESSION_COOKIE_AGE = 100
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_COOKIE_SECURE = True
+
 ROOT_URLCONF = 'hms.urls'
 
 TEMPLATES = [
@@ -89,6 +93,9 @@ DATABASES = {
     }
 }
 
+TEST = {
+    'NAME': 'test_hms',
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
