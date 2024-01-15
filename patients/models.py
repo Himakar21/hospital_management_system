@@ -1,16 +1,30 @@
 from django.db import models
-from django.core.validators import RegexValidator
 from doctors.models import Doctor
 from hospitals.models import Hospital,Department
 
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from datetime import date, timedelta
+
 class Patient(models.Model):
+    mobilenumber_validator = RegexValidator(
+        regex=r'^[1-9]\d{9}$',
+        message="10 digit number",
+    )
+    def validate_age(value):
+        today = date.today()
+        age_limit = timedelta(days=365 * 150)  # 150 years
+        if (value > today) or ((today - value) > age_limit):
+            raise ValidationError('Invalid date of birth.')
 
     id = models.AutoField(auto_created=True,primary_key = True)
     name = models.CharField(max_length=50)
-    dateofbirth = models.DateField()
-    mobilenumber = models.DecimalField(max_digits=10,decimal_places=0)
+    dateofbirth = models.DateField(validators=[validate_age])
+    mobilenumber = models.CharField(max_length=10,validators=[mobilenumber_validator])
     def __str__(self):
         return self.name
+    def get_age(self):
+        return 
 
 class Appointment(models.Model):
 

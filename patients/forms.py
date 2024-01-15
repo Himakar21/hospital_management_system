@@ -10,11 +10,6 @@ class UpdateAppointmentStatusForm(forms.ModelForm):
         fields = ['status']
     
 class AddPatientForm(forms.ModelForm):
-    mobilenumber_validator = RegexValidator(
-        regex=r'^[1-9]\d{9}$',
-        message="10 digit number",
-    )
-    mobilenumber = forms.DecimalField(max_digits=10,decimal_places=0,validators=[mobilenumber_validator])
     class Meta():
         model = Patient
         fields = ['name','mobilenumber','dateofbirth']
