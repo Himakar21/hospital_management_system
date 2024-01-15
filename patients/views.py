@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import Http404
-from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth import authenticate,login
 from django.contrib.auth.decorators import login_required
 from .models import Patient,Appointment
 from .forms import UpdateAppointmentStatusForm,AddPatientForm,AddAppointmentForm
