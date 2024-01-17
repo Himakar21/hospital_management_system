@@ -15,7 +15,7 @@ class Patient(models.Model):
         today = date.today()
         age_limit = timedelta(days=365 * 150)  # 150 years
         if (value > today) or ((today - value) > age_limit):
-            raise ValidationError('Invalid date of birth.')
+            raise ValidationError('Invalid date of birth.')#excpet raise ValidationError every other ereturn values are true
 
     id = models.AutoField(auto_created=True,primary_key = True)
     name = models.CharField(max_length=50)
@@ -24,7 +24,7 @@ class Patient(models.Model):
     def __str__(self):
         return self.name
     def get_age(self):
-        return 
+        return date.today()-self.dateofbirth
 
 class Appointment(models.Model):
 

@@ -20,7 +20,7 @@ from patients.views import SpecificPatientView,AllPatientsView,UpdateStatusView,
 from hospitals.views import GetDoctorsByHospitalAndDepartmentView,GetHospitalsByDepartmentView
 
 urlpatterns = [
-    path('',LoginView),
+    path('',LoginView.as_view()),
     path('home/',HomeView),
     path('admin/', admin.site.urls),
     path('show_patients/<int:id>/',SpecificPatientView.as_view()),

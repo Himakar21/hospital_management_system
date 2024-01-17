@@ -14,11 +14,14 @@ from .serializers import PatientSerializer,AppointmentSerializer
 def HomeView(request,*args,**kwargs):
     return render(request,"home.html",{})
 
-def LoginView(request,*args,**kwargs):
-    if request.method=="POST":
+class LoginView(APIView):
+    def get(self,request,*args,**kwargs):
+        return render(request,"login.html",{"error":"Enter valid credentials"})
+    def post(self,request,*args,**kwaargs):
+        #print(request.data)#<QUeryDict format>
         uname = request.POST.get('username')
         upass = request.POST.get('password')
-        print(upass,uname)
+        #print(upass,uname)
         user = authenticate(username=uname,password=upass)
         if user:
             login(request,user)
@@ -26,9 +29,8 @@ def LoginView(request,*args,**kwargs):
                 return redirect("admin/")
             else:
                 return redirect("home/")
-
-
-    return render(request,"login.html",{})
+        else:
+            return render(request,"login.html",{"error":"Incorrect credentials.Please enter valid credentials."})
 
 class SpecificPatientView(APIView):
     def get(self, request, id, *args, **kwargs):
@@ -62,9 +64,7 @@ class SpecificAppointmentView(APIView):
     def get(self,request,id,**kwargs):
         try:
             patient_instance=Patient.objects.get(id=id)
-            #print(patient_instance)
             appointments = Appointment.objects.filter(patient= patient_instance)
-            #print(appointment[0].symptoms)
         except Patient.DoesNotExist:
             raise Http404
         serializer = AppointmentSerializer(appointments,many=True)
@@ -73,8 +73,6 @@ class SpecificAppointmentView(APIView):
 class AllAppointmentsView(APIView):
     def get(self,request,*args,**kwargs):
         all_appointments = Appointment.objects.all()
-        #serializer = AppointmentSerializer(all_appointments,many=True)
-        #print(serializer)
         return render(request,"display_all_appointments.html",{"all_appointments":all_appointments})
 
 class AddAppointmentView(APIView):
@@ -85,26 +83,31 @@ class AddAppointmentView(APIView):
         return render(request,"add_appointment.html",my_context)
     def post(self,request,*args,**kwargs):
         serializer = AppointmentSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid():#serializer.validated_data attribute contains the cleaned and validated data.
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            #serializer.errors attribute contains a dictionary where keys are field names, and values are lists of error messages
         
 
 class UpdateStatusView(APIView):
     def get(self,request,id):
-        form = UpdateAppointmentStatusForm()
-        #print(form.data)
-        my_context = {"form":form}
-        return render(request,"update_status.html",my_context)
+        try:
+            instance = Appointment.objects.get(id=id)
+            form = UpdateAppointmentStatusForm(instance=instance)
+            my_context = {"form":form}
+            return render(request,"update_status.html",my_context)
+        except:
+            raise Http404
     def post(self,request,id):
-        instance = Appointment.objects.get(id=id)
-        #print(request.POST)
-        form = UpdateAppointmentStatusForm(request.POST, instance=instance)
-        if form.is_valid():
-            form.save()  
-            serializer = AppointmentSerializer(instance) 
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            instance = Appointment.objects.get(id=id)
+            serializer = AppointmentSerializer(instance=instance,data=request.POST)
+            if serializer.is_valid():
+                serializer.save()  
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            raise Http404
