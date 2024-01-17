@@ -1,13 +1,12 @@
 from django import forms
-from django.core.validators import RegexValidator
-from doctors.models import Doctor
 from patients.models import Patient,Appointment
     
 
-class UpdateAppointmentStatusForm(forms.ModelForm):
+class UpdateAppointmentStatusForm(forms.ModelForm):            
     class Meta():
         model = Appointment
-        fields = ['status']
+        fields = ['patient', 'symptoms', 'department', 'hospital', 'doctor','status']
+        
     
 class AddPatientForm(forms.ModelForm):
     class Meta():
