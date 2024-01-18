@@ -17,7 +17,6 @@ class Patient(models.Model):
         if (value > today) or ((today - value) > age_limit):
             raise ValidationError('Invalid date of birth.')#excpet raise ValidationError every other ereturn values are true
 
-    id = models.AutoField(auto_created=True,primary_key = True)
     name = models.CharField(max_length=50)
     dateofbirth = models.DateField(validators=[validate_age])
     mobilenumber = models.CharField(max_length=10,validators=[mobilenumber_validator])
@@ -30,7 +29,6 @@ class Appointment(models.Model):
 
     status_enum = [('primary check','primary check'),('consultation','consultation'),('admitted','admitted'),('discharged','discharged')]
 
-    id = models.AutoField(auto_created=True,primary_key = True)
     patient = models.ForeignKey(Patient,on_delete=models.CASCADE)
     symptoms = models.TextField()
     department = models.ForeignKey(Department,on_delete=models.CASCADE)

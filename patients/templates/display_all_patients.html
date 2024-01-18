@@ -6,12 +6,14 @@
             <th><strong>Name</strong></th>
             <th><strong>Mobile Number</strong></th>
             <th><strong>DoB</strong></th>
+            <th>Book</th>
         </thead>
         {% for patient in all_patients %}
             <tr>
                 <td>{{ patient.name }}</td>
                 <td>{{ patient.mobilenumber }}</td>
                 <td>{{patient.dateofbirth}}</td>
+                <td><a href="/add_appointment/{{patient.id}}">Book appointment</a></td>
             </tr>
         {% endfor %}
     </table>

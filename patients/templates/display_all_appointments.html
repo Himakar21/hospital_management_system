@@ -10,16 +10,18 @@
             <th><strong>Doctor</strong></th>
             <th><strong>visit_date</strong></th>
             <th><strong>Status</strong></th>
+            <th></th>
         </thead>
         {% for appointment in all_appointments %}
             <tr>
-                <td>{{ appointment.patient.name }}</td>
+                <td>{{ appointment.patient }}</td>
                 <td>{{ appointment.symptoms }}</td>
-                <td>{{ appointment.department.name }}</td>
-                <td>{{ appointment.hospital.name }}</td>
-                <td>{{ appointment.doctor.name }}</td>
+                <td>{{ appointment.department }}</td>
+                <td>{{ appointment.hospital }}</td>
+                <td>{{ appointment.doctor }}</td>
                 <td>{{ appointment.visit_date}}</td>
                 <td>{{appointment.status}}</td>
+                <td><a href="/update_status/{{appointment.id}}">update status</a></td>
             </tr>
         {% endfor %}
     </table>
