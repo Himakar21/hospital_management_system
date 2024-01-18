@@ -33,13 +33,14 @@ class LoginView(APIView):
             return render(request,"login.html",{"error":"Incorrect credentials.Please enter valid credentials."})
 
 class SpecificPatientView(APIView):
-    def get(self, request, id, *args, **kwargs):
+    def get(self, request,mobile_number, *args, **kwargs):
         try:
-            patient = Patient.objects.get(id=id)
+            patient = Patient.objects.filter(mobilenumber=mobile_number)
         except Patient.DoesNotExist:
             raise Http404
-        serializer = PatientSerializer(patient)
-        return Response(serializer.data)
+        serializer = PatientSerializer(patient,many=True)
+        #print(serializer.data)
+        return render(request,"display_all_patients.html",{"all_patients":serializer.data})
 
 class AllPatientsView(APIView):
     def get(self,request,*args,**kwargs):
@@ -61,20 +62,47 @@ class AddPatientView(APIView):
         return render(request, "add_patient.html", my_context)
 
 class SpecificAppointmentView(APIView):
-    def get(self,request,id,**kwargs):
+    def get(self,request,mobile_number,**kwargs):
+        appointments = Appointment.objects.none()
         try:
-            patient_instance=Patient.objects.get(id=id)
-            appointments = Appointment.objects.filter(patient= patient_instance)
+            # patient_instance=Patient.objects.get(id=id)
+            # appointments = Appointment.objects.filter(patient= patient_instance)
+            # patients = Patient.objects.filter(mobilenumber=mobile_number)
+            # for p in patients:
+            #     q = Appointment.objects.filter(patient=p)
+            #     appointments = appointments.union(q)
+            appointments = Appointment.objects.select_related("patient").filter(patient__mobilenumber=mobile_number)
         except Patient.DoesNotExist:
             raise Http404
-        serializer = AppointmentSerializer(appointments,many=True)
-        return Response(serializer.data)
+        if appointments:
+            serializer = AppointmentSerializer(appointments,many=True)
+            return render(request,"display_all_appointments.html",{"all_appointments":serializer.data})
+        else:
+            raise Http404
 
 class AllAppointmentsView(APIView):
     def get(self,request,*args,**kwargs):
-        all_appointments = Appointment.objects.all()
-        return render(request,"display_all_appointments.html",{"all_appointments":all_appointments})
+        appointments = Appointment.objects.all()
+        serializer = AppointmentSerializer(appointments,many=True)
+        return render(request,"display_all_appointments.html",{"all_appointments":serializer.data})
 
+
+class AddSpecificPatientAppointmentView(APIView):
+    def get(self,request,id,*args,**kwargs):
+        patient = Patient.objects.get(id=id)
+        init_patient = {"patient":patient}
+        form = AddAppointmentForm(initial=init_patient)
+        my_context = {"form":form}
+        #print(form.cleaned_data)
+        return render(request,"add_appointment.html",my_context)
+    def post(self,request,*args,**kwargs):
+        serializer = AppointmentSerializer(data=request.data)
+        if serializer.is_valid():#serializer.validated_data attribute contains the cleaned and validated data.
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 class AddAppointmentView(APIView):
     def get(self,request,*args,**kwargs):
         form = AddAppointmentForm()

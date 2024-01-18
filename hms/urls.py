@@ -16,19 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from patients.views import SpecificPatientView,AllPatientsView,UpdateStatusView,AddPatientView,HomeView,LoginView,AddAppointmentView,AllAppointmentsView,SpecificAppointmentView
+from patients.views import SpecificPatientView,AllPatientsView,UpdateStatusView,AddPatientView,HomeView,LoginView,AddAppointmentView,AllAppointmentsView,SpecificAppointmentView,AddSpecificPatientAppointmentView
 from hospitals.views import GetDoctorsByHospitalAndDepartmentView,GetHospitalsByDepartmentView
 
 urlpatterns = [
     path('',LoginView.as_view()),
     path('home/',HomeView),
     path('admin/', admin.site.urls),
-    path('show_patients/<int:id>/',SpecificPatientView.as_view()),
+    path('show_patients/<str:mobile_number>/',SpecificPatientView.as_view()),
     path('show_patients/',AllPatientsView.as_view()),
     path('add_patient/',AddPatientView.as_view()),
-    path('show_appointments/<int:id>/',SpecificAppointmentView.as_view()),
+    path('show_appointments/<str:mobile_number>/',SpecificAppointmentView.as_view()),
     path('show_appointments/',AllAppointmentsView.as_view()),
     path('add_appointment/',AddAppointmentView.as_view()),
+    path('add_appointment/<int:id>',AddSpecificPatientAppointmentView.as_view()),
     path('update_status/<int:id>',UpdateStatusView.as_view()),
     path('get_doctors_by_hospital_and_department/',GetDoctorsByHospitalAndDepartmentView,name='get_hospital_doctors'),
     path('get_hospitals_by_department/',GetHospitalsByDepartmentView,name='get_department_hospitals')
