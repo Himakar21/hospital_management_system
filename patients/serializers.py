@@ -19,3 +19,9 @@ class AppointmentSerializer(serializers.ModelSerializer):
         representation['hospital'] = instance.hospital.__str__()   
         representation['department'] = instance.department.__str__()     
         return representation
+    
+class UpdateAppointmentStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Appointment
+        fields='__all__'
+        read_only_fields = ('patient', 'symptoms', 'department', 'hospital', 'doctor')
