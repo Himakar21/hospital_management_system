@@ -30,7 +30,7 @@ urlpatterns = [
     path('show_appointments/',AllAppointmentsView.as_view()),
     path('add_appointment/',AddAppointmentView.as_view()),
     path('add_appointment/<int:id>',AddSpecificPatientAppointmentView.as_view()),
-    path('update_status/<int:id>',UpdateStatusView.as_view()),
+    path('update_status/<int:pk>',UpdateStatusView.as_view()),
     path('get_doctors_by_hospital_and_department/',GetDoctorsByHospitalAndDepartmentView,name='get_hospital_doctors'),
     path('get_hospitals_by_department/',GetHospitalsByDepartmentView,name='get_department_hospitals')
 ]

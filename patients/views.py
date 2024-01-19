@@ -6,9 +6,10 @@ from .models import Patient,Appointment
 from .forms import UpdateAppointmentStatusForm,AddPatientForm,AddAppointmentForm
 
 from rest_framework.views import APIView
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import PatientSerializer,AppointmentSerializer
+from .serializers import PatientSerializer,AppointmentSerializer,UpdateAppointmentStatusSerializer
 
 @login_required(login_url='/')
 def HomeView(request,*args,**kwargs):
@@ -119,23 +120,26 @@ class AddAppointmentView(APIView):
             #serializer.errors attribute contains a dictionary where keys are field names, and values are lists of error messages
         
 
-class UpdateStatusView(APIView):
-    def get(self,request,id):
-        try:
-            instance = Appointment.objects.get(id=id)
-            form = UpdateAppointmentStatusForm(instance=instance)
-            my_context = {"form":form}
-            return render(request,"update_status.html",my_context)
-        except:
-            raise Http404
-    def post(self,request,id):
-        try:
-            instance = Appointment.objects.get(id=id)
-            serializer = AppointmentSerializer(instance=instance,data=request.POST)
-            if serializer.is_valid():
-                serializer.save()  
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
-            raise Http404
+class UpdateStatusView(RetrieveUpdateAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = UpdateAppointmentStatusSerializer
+# class UpdateStatusView(APIView):
+#     def get(self,request,id):
+#         try:
+#             instance = Appointment.objects.get(id=id)
+#             form = UpdateAppointmentStatusForm(instance=instance)
+#             my_context = {"form":form}
+#             return render(request,"update_status.html",my_context)
+#         except:
+#             raise Http404
+#     def post(self,request,id):
+#         try:
+#             instance = Appointment.objects.get(id=id)
+#             serializer = AppointmentSerializer(instance=instance,data=request.POST)
+#             if serializer.is_valid():
+#                 serializer.save()  
+#                 return Response(serializer.data, status=status.HTTP_200_OK)
+#             else:
+#                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         except:
+#             raise Http404
